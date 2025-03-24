@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Query
+from fastapi.responses import PlainTextResponse
 import requests
 import os
 
@@ -40,16 +41,16 @@ def get_user_about(username: str):
     data = response.json()
     if data["data"]:
         return data["data"][0]["description"]
-    return "No se encontró la descripción."
+    return ""
 
 @app.get("/")
 def root():
     return {"message": "Twitch About API"}
 
-@app.get("/about")
+@app.get("/about", response_class=PlainTextResponse)
 def about(user: str = Query(...)):
     try:
         description = get_user_about(user)
-        return description or "No hay descripción disponible."
+        return description or ""
     except Exception as e:
-        return f"Error al obtener información: {str(e)}"
+        return f"Error to get the info: {str(e)}"
